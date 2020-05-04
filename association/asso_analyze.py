@@ -1,6 +1,6 @@
 #encoding:utf-8
-from classify.classify import BertClassify
-from classify.keyword_classify import BertKeywordClassify
+from classify.classify import BertClassify, CnnClassify
+from classify.keyword_classify import BertKeywordClassify, CnnKeywordClassify
 from parser.syntactic_parsing import HanlpParser
 from utils.utils import sentence_tokenize
 
@@ -9,6 +9,7 @@ class Association():
         self.bertClassify = BertClassify()
         self.bertKeywordClassify = BertKeywordClassify()
         self.hanlpParser = HanlpParser()
+        self.batch_size = 30
 
     def analyzeAll(self, policy1, policy2):
         '''
@@ -56,8 +57,6 @@ class Association():
             "policy2": dic_policy2
         }
 
-
-
     def get_relation(self, policy_lis):
         dic = {}
         index = 1
@@ -91,18 +90,24 @@ class Association():
         :return:
         '''
         sentences = sentence_tokenize(policy)
-        policy_lis = []
+        new_sentences = []
         for sentence in sentences:
+            sentence = sentence.strip().replace("\u3000", "")
             if not sentence:
                 continue
-            sentence = sentence.strip().replace("\u3000", "")
+            new_sentences.append(sentence)
+        policy_lis = []
+        for i in range(0, len(new_sentences), self.batch_size):
+            sentences = new_sentences[i: min(len(new_sentences), i+self.batch_size)]
             if use_classify:
-                classify_label = self.bertClassify.predict(sentence)
-                keyword_label = self.bertKeywordClassify.predict(sentence)
-                policy_lis.append([sentence, classify_label, keyword_label])
+                classify_label = self.bertClassify.predicts(sentences)
+                keyword_label = self.bertKeywordClassify.predicts(sentences)
+                for j in range(len(sentences)):
+                    policy_lis.append([sentences[j], classify_label[j], keyword_label[j]])
             else:
-                keyword_label = self.bertKeywordClassify.predict(sentence)
-                policy_lis.append([sentence, keyword_label])
+                keyword_label = self.bertKeywordClassify.predict(sentences)
+                for j in range(len(sentences)):
+                    policy_lis.append([sentences[j], keyword_label[j]])
         return policy_lis
 
     def getKeywordDict(self, policy_lis, use_classify=True):
@@ -123,8 +128,6 @@ class Association():
             else:
                 keywordDict[lis[index]].append(lis[0])
         return keywordDict
-
-
 
     #分析单个句子
     def assoSingleAnalyze(self, policy1, policy2, sentence, id):

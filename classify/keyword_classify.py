@@ -109,5 +109,10 @@ class BertKeywordClassify():
         results = self.model.predict(sentence)
         return results
 
+    def predicts(self, sentences):
+        sentences = [" ".join(self.bert_token.tokenize(sentence)) for sentence in sentences]
+        results = self.model.predict_batch(sentences)
+        return results
+
 
 

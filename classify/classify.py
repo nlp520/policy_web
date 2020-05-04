@@ -55,6 +55,13 @@ class CnnClassify():
         results = self.model.predict(sentence)
         return results
 
+
+    def predicts(self, sentences):
+        sentences = [" ".join(list(jieba.cut(sentence))) for sentence in sentences]
+        results = self.model.predict_batch(sentences)
+        return results
+
+
 class BertClassify():
     def __init__(self):
         vocab_config = {
@@ -119,6 +126,12 @@ class BertClassify():
         sentence = " ".join(self.bert_token.tokenize(sentence))
         results = self.model.predict(sentence)
         return self.label_dic[results]
+
+
+    def predicts(self, sentences):
+        sentences = [" ".join(self.bert_token.tokenize(sentence)) for sentence in sentences]
+        results = self.model.predict_batch(sentences)
+        return [self.label_dic[result] for result in results]
 
 
 

@@ -125,8 +125,6 @@ def assoAnalyze():
             '''
             policy1 = json.loads(policy1)
             policy2 = json.loads(policy2)
-            print(type(policy1))
-            print(type(policy2))
             results = asso.analyzeAll(policy1, policy2)
             # results = {
             #     "result":"对于政策A来说，政策B是起到理论指导作用",
