@@ -1,10 +1,15 @@
+flask
 jieba
 ftfy
+h5py
+scipy
+nltk
+sklearn
 torch
 overrides
 pytorch_pretrained_bert
 jsonpickle
 tensorboardX
 pyhanlp
-
+spacy
 

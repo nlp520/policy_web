@@ -1,8 +1,5 @@
 import os
 import numpy as np
-from pdfminer.pdfinterp import PDFResourceManager, process_pdf
-from pdfminer.converter import TextConverter
-from pdfminer.layout import LAParams
 from io import StringIO
 
 def sentence_tokenize(doc:str= None) -> list:
@@ -51,25 +48,6 @@ def chinese2digits(uchars_chinese):
 def create_uuid():
     import uuid
     return str(uuid.uuid1())
-
-
-def readPDF(pdfFile):
-    '''
-    读取pdf
-    :param pdfFile:
-    :return:
-    '''
-    rsrcmgr = PDFResourceManager()
-    retstr = StringIO()
-    laparams = LAParams()
-    device = TextConverter(rsrcmgr, retstr, laparams=laparams)
-
-    process_pdf(rsrcmgr, device, open(pdfFile, "rb"))
-    device.close()
-
-    content = retstr.getvalue()
-    retstr.close()
-    return content
 
 
 if __name__ == '__main__':
