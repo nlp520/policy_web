@@ -1,0 +1,10 @@
+jieba
+ftfy
+torch
+overrides
+pytorch_pretrained_bert
+jsonpickle
+tensorboardX
+pyhanlp
+
+
