@@ -90,12 +90,14 @@ def conflictDetection():
     :return:
     '''
     if request.method == 'POST':
+        # datax = request.get_data()
         datax = request.form.get('policy',"")
         test_policy = request.form.get('test_policy', "")
         if datax and test_policy:
             '''
             添加数据处理操作
             '''
+            datax = json.loads(datax)
             results = conflict.conflict(datax, target_sent=test_policy)
             # results = {
             #     "result":"存在时间类型的冲突",
@@ -121,6 +123,10 @@ def assoAnalyze():
             '''
             添加数据处理操作
             '''
+            policy1 = json.loads(policy1)
+            policy2 = json.loads(policy2)
+            print(type(policy1))
+            print(type(policy2))
             results = asso.analyzeAll(policy1, policy2)
             # results = {
             #     "result":"对于政策A来说，政策B是起到理论指导作用",
@@ -157,6 +163,8 @@ def assoSingleAnalyze():
             '''
             添加数据处理操作
             '''
+            policy1 = json.loads(policy1)
+            policy2 = json.loads(policy2)
             results = asso.assoSingleAnalyze(policy1, policy2, sentence, id)
             # results = {
             #     "policy":{
@@ -204,4 +212,4 @@ def policyFind():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host="0.0.0.0", port = 5005, debug=True)
+    app.run(host="0.0.0.0", port = 5000, debug=True)

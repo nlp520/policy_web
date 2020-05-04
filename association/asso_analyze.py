@@ -93,6 +93,9 @@ class Association():
         sentences = sentence_tokenize(policy)
         policy_lis = []
         for sentence in sentences:
+            if not sentence:
+                continue
+            sentence = sentence.strip().replace("\u3000", "")
             if use_classify:
                 classify_label = self.bertClassify.predict(sentence)
                 keyword_label = self.bertKeywordClassify.predict(sentence)

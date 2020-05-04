@@ -120,13 +120,14 @@ class Conflict():
                 number_lis.append(number_dic)
         return number_lis
 
-    def conflict(self, document, target_sent):
+    def conflict(self, datax, target_sent):
         '''
         冲突检测
         :param document:
         :param target_sent:
         :return:
         '''
+        document = datax.get("context")
         similar_sentence, similar_paragraph = self.find_paragraph(document, target_sent)
         print("similar_sentence:",similar_sentence)
         results = self.judge_conflict(target_sentence=target_sent, similar_sentence=similar_sentence, similar_paragraph=similar_paragraph)
@@ -179,7 +180,9 @@ class Conflict():
                             high_score = score
 
         #如果sentence后面有（）,那么继续增加
+        print("similar_sentence:", similar_sentence)
         start_index = similar_paragraph.index(similar_sentence)
+        print("start_index:", start_index)
         end_index = start_index + len(similar_sentence)
         word = similar_paragraph[end_index]
         word_dic = {
