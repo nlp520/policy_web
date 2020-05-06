@@ -1,3 +1,6 @@
+#encoding:utf-8
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 from flask import Flask
 from flask import render_template, redirect, url_for
 from flask import request, session, json

@@ -21,7 +21,7 @@ class CnnClassify():
     def __init__(self):
         vocab_config = {
             "vocab_file": os.path.join(current_path, "model", "word2vec", "policy_vocab.txt"),
-            "label_file": os.path.join(current_path, "model", "keyword", "policy_keyword_label.txt"),
+            "label_file": os.path.join(current_path, "model", "classify", "policy_classify_label.txt"),
             "oov_token": "[UNK]",
             "padding_token": "[PAD]"
         }
@@ -45,21 +45,30 @@ class CnnClassify():
             "max_sequence_length": 100,
             "lazy": False
         }
+        self.label_dic = {
+            "[UNK]": "",
+            "1": "理论指导",
+            "2": "规范管理",
+            "3": "体系培育",
+            "4": "支撑服务"
+        }
+
         vocab = get_vocab_from_files(**vocab_config)
         reader = TextClassificationJsonReader.from_params(params=Params(DataLoadConfig))
         self.model = TextcnnScorer.from_params(params=Params(deepcopy(model_config)), dataset_reader=reader, \
-                                          model_path=os.path.join(current_path, "model", "keyword", "best.th"), sentence_size=100, vocab=vocab)
+                                          model_path=os.path.join(current_path, "model", "classify", "cnn_best.th"), \
+                                               sentence_size=100, vocab=vocab, device_id=-1)
 
     def predict(self, sentence):
         sentence = " ".join(list(jieba.cut(sentence)))
         results = self.model.predict(sentence)
-        return results
+        return self.label_dic[results]
 
 
     def predicts(self, sentences):
         sentences = [" ".join(list(jieba.cut(sentence))) for sentence in sentences]
         results = self.model.predict_batch(sentences)
-        return results
+        return [self.label_dic[result] for result in results]
 
 
 class BertClassify():
@@ -119,7 +128,7 @@ class BertClassify():
         reader = BertClassificationJsonReader.from_params(params=Params(DataLoadConfig))
         self.model = BertFreezeScorer.from_params(params=Params(deepcopy(model_config)), dataset_reader=reader, \
                                              model_path=os.path.join(current_path, "model", "classify", "bert_best.th"), sentence_size=100,
-                                             vocab=vocab)
+                                             vocab=vocab, device_id=-1)
         self.bert_token = BertTokenizer(vocab_config["vocab_file"])
 
     def predict(self, sentence):

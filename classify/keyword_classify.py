@@ -53,6 +53,11 @@ class CnnKeywordClassify():
         results = self.model.predict(sentence)
         return results
 
+    def predicts(self, sentences):
+        sentences = [" ".join(list(jieba.cut(sentence))) for sentence in sentences]
+        results = self.model.predict_batch(sentences)
+        return results
+
 class BertKeywordClassify():
     def __init__(self):
         vocab_config = {

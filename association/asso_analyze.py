@@ -2,12 +2,12 @@
 from classify.classify import BertClassify, CnnClassify
 from classify.keyword_classify import BertKeywordClassify, CnnKeywordClassify
 from parser.syntactic_parsing import HanlpParser
-from utils.utils import sentence_tokenize
-
+from utils.utils import sentence_tokenize, convert_date
+import time
 class Association():
     def __init__(self):
-        self.bertClassify = BertClassify()
-        self.bertKeywordClassify = BertKeywordClassify()
+        self.bertClassify = CnnClassify()
+        self.bertKeywordClassify = CnnKeywordClassify()
         self.hanlpParser = HanlpParser()
         self.batch_size = 30
 
@@ -45,6 +45,14 @@ class Association():
                 "result": result
             }
 
+        level_label = self.judge_level(policy1, policy2)
+        if isinstance(level_label, str):
+            result = "两个政策不存在上下级关系，无法进行比较。"
+            return {
+                "result": result
+            }
+
+
         policy1_lis = self.analyzePolicy(policy1.get("context", ""))
         policy2_lis = self.analyzePolicy(policy2.get("context", ""))
 
@@ -76,11 +84,58 @@ class Association():
             return True
         else:
             return False
+    def judge_time(self, first_time, second_time):
+        '''
+        判断哪个时间在前，返回False， 第二个时间要近，返回True,第一个时间近
+        :param first_time:
+        :param second_time:
+        :return:
+        '''
+        first_time = convert_date(first_time)
+        second_time = convert_date(second_time)
+        return first_time > second_time
+
 
     def judge_level(self, policy1, policy2):
+        '''
+        返回False, 政策1优先级高，
+        :param policy1:
+        :param policy2:
+        :return:
+        '''
         #判断是否是相同级别
+        org1 = policy1.get("org")
+        org2 = policy2.get("org")
 
-        pass
+        date1 = policy1.get("date")
+        date2 = policy2.get("date")
+
+        province1 = policy1.get("province")
+        province2 = policy2.get("province")
+
+        if org1 == "国务院" and org2 == "国务院":
+            return self.judge_time(date1, date2)
+        elif org1 == "国务院" and org2 != "国务院":
+            return False
+        elif org1 != "国务院" and org2 == "国务院":
+            return True
+        else:
+            #相同机构，时间发布早的优先级高
+            if org1 == org2:
+                return self.judge_time(date1, date2)
+            else:
+                if not province1 or not province2:
+                    return "无法比较"
+                else:
+                    if province1 == province2:
+                        if "人民政府" in org1 and "人民政府" not in org2:
+                            return False
+                        elif "人民政府" not in org1 and "人民政府" in org2:
+                            return True
+                        else:
+                            return self.judge_time(date1, date2)
+                    else:
+                        return "无法比较"
 
 
     def analyzePolicy(self, policy, use_classify=True):

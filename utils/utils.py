@@ -49,6 +49,120 @@ def create_uuid():
     import uuid
     return str(uuid.uuid1())
 
+def convert_date(str_date):
+    str_date = str_date.strip().replace(" ", "")
+    year = 1900
+    month = 1
+    day = 1
+    if (len(str_date) > 11):
+        str_date = str_date[:11]
+    if (str_date.find('-') > 0):
+        year = str_date[:4]
+        if (year.isdigit()):
+            year = int(year)
+        else:
+            year = 0
+        month = str_date[5:str_date.rfind('-')]
+        if (month.isdigit()):
+            month = int(month)
+        else:
+            month = 0
+        if (str_date.find(' ') == -1):
+            day = str_date[str_date.rfind('-') + 1:]
+        else:
+            day = str_date[str_date.rfind('-') + 1:str_date.find(' ')]
+        if (day.isdigit()):
+            day = int(day)
+        else:
+            day = 0
+    elif (str_date.find('年') > 0):
+        year = str_date[:4]
+        if (year.isdigit()):
+            year = int(year)
+        else:
+            year = 0
+        if "月" in str_date:
+            month = str_date[5:str_date.rfind('月')]
+            if (month.isdigit()):
+                month = int(month)
+            else:
+                month = 0
+            if "日" in str_date:
+                day = str_date[str_date.rfind('月') + 1:str_date.rfind('日')]
+                if (day.isdigit()):
+                    day = int(day)
+                else:
+                    day = 0
+            else:
+                day = 0
+        else:
+            month = 0
+
+    elif (str_date.find('/') > 0):
+        year = str_date[:4]
+        if (year.isdigit()):
+            year = int(year)
+        else:
+            year = 0
+        month = str_date[5:str_date.rfind('/')]
+        if (month.isdigit()):
+            month = int(month)
+        else:
+            month = 0
+        if (str_date.find(' ') == -1):
+            day = str_date[str_date.rfind('/') + 1:]
+        else:
+            day = str_date[str_date.rfind('/') + 1:str_date.find(' ')]
+        if (day.isdigit()):
+            day = int(day)
+        else:
+            day = 0
+    elif (str_date.find('.') > 0):
+        year = str_date[:4]
+        if (year.isdigit()):
+            year = int(year)
+        else:
+            year = 0
+        if str_date.count(".") > 1:
+            month = str_date[5:str_date.rfind('.')]
+            if (month.isdigit()):
+                month = int(month)
+            else:
+                month = 0
+            if (str_date.find(' ') == -1):
+                day = str_date[str_date.rfind('.') + 1:]
+            else:
+                day = str_date[str_date.rfind('.') + 1:str_date.find(' ')]
+            if (day.isdigit()):
+                day = int(day)
+            else:
+                day = 0
+        else:
+            month = str_date[5:len(str_date)]
+            if (month.isdigit()):
+                month = int(month)
+            else:
+                month = 0
+            day = 0
+    else:
+        year = 1900
+        month = 1
+        day = 1
+    if month < 10:
+        month = '0' + str(month)
+    if day < 10:
+        day = '0' + str(day)
+
+    if month != "00" and day == "00":
+        return '%s-%s' % (year, month)
+    elif year and month == "00":
+        return "%s" % (year)
+    else:
+        return '%s-%s-%s' % (year, month, day)
+
+
+
+
 
 if __name__ == '__main__':
     # content = '''
