@@ -120,7 +120,7 @@ def assoAnalyze():
     :return:
     '''
     if request.method == 'POST':
-        policy1 = request.form.get('policy1',"")
+        policy1 = request.form.get('policy1', "")
         policy2 = request.form.get('policy2', "")
         if policy1 and policy2:
             '''
@@ -213,4 +213,4 @@ def policyFind():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host="0.0.0.0", port = 5000, debug=True)
+    app.run(host="0.0.0.0", port = 5005, debug=True)

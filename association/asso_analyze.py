@@ -137,6 +137,14 @@ class Association():
                     else:
                         return "无法比较"
 
+    def clear_sentences(self, sentences):
+        new_sentences = []
+        for sentence in sentences:
+            sentence = sentence.strip().replace("\u3000", "")
+            if not sentence:
+                continue
+            new_sentences.append(sentence)
+        return new_sentences
 
     def analyzePolicy(self, policy, use_classify=True):
         '''
@@ -145,12 +153,7 @@ class Association():
         :return:
         '''
         sentences = sentence_tokenize(policy)
-        new_sentences = []
-        for sentence in sentences:
-            sentence = sentence.strip().replace("\u3000", "")
-            if not sentence:
-                continue
-            new_sentences.append(sentence)
+        new_sentences = self.clear_sentences(sentences)
         policy_lis = []
         for i in range(0, len(new_sentences), self.batch_size):
             sentences = new_sentences[i: min(len(new_sentences), i+self.batch_size)]
@@ -190,6 +193,7 @@ class Association():
         if id == 1:
             context = policy2.get("context")
             sentences = sentence_tokenize(context)
+            sentences = self.clear_sentences(sentences)
             for sent in sentences:
                 if self.cal_similar(sentence, sent):
                     results.append([sent, "相关"])
