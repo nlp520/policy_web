@@ -40,30 +40,101 @@ class Association():
         #判断政策上下级：
         field_label = self.judge_field(policy1.get("category", ""), policy2.get("category", ""))
         if not field_label:
-            result = "两个政策属于不同领域，无法进行比较。"
+            result = "政策1输属于" + policy1.get("category", "") + "，政策2属于"+policy2.get("category", "")+",两个政策属于不同领域，无法进行比较。"
             return {
                 "result": result
             }
-
         level_label = self.judge_level(policy1, policy2)
         if isinstance(level_label, str):
             result = "两个政策不存在上下级关系，无法进行比较。"
             return {
                 "result": result
             }
-
-
         policy1_lis = self.analyzePolicy(policy1.get("context", ""))
         policy2_lis = self.analyzePolicy(policy2.get("context", ""))
 
         dic_policy1 = self.get_relation(policy1_lis)
         dic_policy2 = self.get_relation(policy2_lis)
 
+        results = self.analyze_realtion(policy1_lis, policy2_lis, level_label)
+
         return {
-            "results": "政策A对政策B是理论指导作用",
+            "results": results,
             "policy1": dic_policy1,
             "policy2": dic_policy2
         }
+
+    def analyze_realtion(self, policy1_lis, policy2_lis, level_label):
+        policy1_dic = {}
+        policy2_dic = {}
+        for lis in policy1_lis:
+            if lis[2] not in policy1_dic:
+                policy1_dic[lis[2]] = [[lis[0], lis[1]]]
+            else:
+                policy1_dic[lis[2]].append([lis[0], lis[1]])
+        for lis in policy2_lis:
+            if lis[2] not in policy2_dic:
+                policy2_dic[lis[2]] = [[lis[0], lis[1]]]
+            else:
+                policy2_dic[lis[2]].append([lis[0], lis[1]])
+
+        print(policy2_dic.keys())
+        #计算相同关键词的句子的相似度
+        relation1_dic = {}
+        relation2_dic = {}
+        for key, value1_lis in policy1_dic.items():
+            if key != "[UNK]" and key in policy2_dic:
+                value2_lis = policy2_dic[key]
+                for sent1_lis in value1_lis:
+                    for sent2_lis in value2_lis:
+                        #计算相似度
+                        if self.cal_similar(sent1_lis[0], sent2_lis[0]):
+                            if sent1_lis[1] not in relation1_dic:
+                                relation1_dic[sent1_lis[1]] = 1
+                            else:
+                                relation1_dic[sent1_lis[1]] += 1
+                            if sent2_lis[1] not in relation2_dic:
+                                relation2_dic[sent2_lis[1]] = 1
+                            else:
+                                relation2_dic[sent2_lis[1]] += 1
+
+        if not level_label:
+            results = "政策1是上级政策，政策2是下级政策，"
+            relation1 = sorted(relation1_dic.items(), key=lambda x: x[1], reverse=True)
+            relation2 = sorted(relation2_dic.items(), key=lambda x: x[1], reverse=True)
+            result_relation1 = ""
+            result_relation2 = ""
+            for relation in relation1:
+                if relation[0] == "[UNK]" or relation[0] == "体系培育" or relation[0] == "支撑服务":
+                    continue
+                result_relation1 = relation[0]
+                break
+
+            for relation in relation2:
+                if relation[0] == "[UNK]" or relation[0] == "理论指导":
+                    continue
+                result_relation2 = relation[0]
+                break
+            results = results + "从整体上看，政策1对政策2起到" + result_relation1 +"的作用，政策2对政策1起到" + result_relation2 + "的作用。"
+        else:
+            results = "政策2是上级政策，政策1是下级政策，"
+            relation1 = sorted(relation1_dic.items(), key=lambda x: x[1], reverse=True)
+            relation2 = sorted(relation2_dic.items(), key=lambda x: x[1], reverse=True)
+            result_relation1 = ""
+            result_relation2 = ""
+            for relation in relation1:
+                if relation[0] == "" or relation[0] == "理论指导":
+                    continue
+                result_relation1 = relation[0]
+                break
+
+            for relation in relation2:
+                if relation[0] == "" or relation[0] == "体系培育" or relation[0] == "支撑服务":
+                    continue
+                result_relation2 = relation[0]
+                break
+            results = results + "从整体上看，政策1对政策2起到" + result_relation1 + "的作用，政策2对政策1起到" + result_relation2 + "的作用。"
+        return results
 
     def get_relation(self, policy_lis):
         dic = {}

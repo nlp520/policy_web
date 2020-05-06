@@ -5,9 +5,9 @@ import requests
 #请求的URL
 import json
 
-
+url_ = "http://127.0.0.1:5005"
 def test_dataProcess():
-    url = 'http://127.0.0.1:5005/dataProcess'
+    url = url_ + '/dataProcess'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -99,7 +99,7 @@ def test_dataProcess():
 
 
 def test_keywords():
-    url = 'http://127.0.0.1:5005/keywords'
+    url = url_ + '/keywords'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -125,7 +125,7 @@ def test_keywords():
 
 
 def test_dataAnalyze():
-    url = 'http://127.0.0.1:5005/dataAnalyze'
+    url = url_ + '/dataAnalyze'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -218,7 +218,7 @@ def test_dataAnalyze():
 
 
 def test_conflictDetection():
-    url = 'http://127.0.0.1:5005/conflictDetection'
+    url = url_ + '/conflictDetection'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     dic = {
@@ -322,7 +322,7 @@ def test_conflictDetection():
 
 
 def test_assoAnalyze():
-    url = 'http://127.0.0.1:5005/assoAnalyze'
+    url = 'http://127.0.0.1:5000/assoAnalyze'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -526,7 +526,7 @@ def test_assoAnalyze():
 
 
 def test_assoSingleAnalyze():
-    url = 'http://127.0.0.1:5005/assoSingleAnalyze'
+    url = url_ + '/assoSingleAnalyze'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -732,7 +732,7 @@ def test_assoSingleAnalyze():
 
 
 def test_policyFind():
-    url = 'http://127.0.0.1:5005/policyFind'
+    url = url_ + '/policyFind'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -759,9 +759,10 @@ if __name__ == '__main__':
 
     # test_conflictDetection()
 
-    # test_assoAnalyze()
+    test_assoAnalyze()
 
-    test_assoSingleAnalyze()
+    # test_assoSingleAnalyze()
 
+    pass
 
 
