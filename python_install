@@ -12,4 +12,4 @@ jsonpickle
 tensorboardX
 pyhanlp
 spacy
-
+gensim

@@ -5,6 +5,7 @@ from parser.syntactic_parsing import HanlpParser
 from utils.utils import sentence_tokenize, convert_date
 from similar.Doc2vec import DocVec
 import time
+import jieba
 class Association():
     def __init__(self):
         self.bertClassify = CnnClassify()
@@ -91,12 +92,21 @@ class Association():
         #计算相同关键词的句子的相似度
         relation1_dic = {}
         relation2_dic = {}
+        number = 0
+        start_time = time.time()
+
+        for key, value in policy1_dic.items():
+            if key != "[UNK]" and key in policy2_dic:
+                print(len(value) * len(policy2_dic[key]))
+
+
         for key, value1_lis in policy1_dic.items():
             if key != "[UNK]" and key in policy2_dic:
                 value2_lis = policy2_dic[key]
                 for sent1_lis in value1_lis:
                     for sent2_lis in value2_lis:
                         #计算相似度
+                        number += 1
                         if self.cal_similar(sent1_lis[0], sent2_lis[0]):
                             if sent1_lis[1] not in relation1_dic:
                                 relation1_dic[sent1_lis[1]] = 1
@@ -106,7 +116,9 @@ class Association():
                                 relation2_dic[sent2_lis[1]] = 1
                             else:
                                 relation2_dic[sent2_lis[1]] += 1
-
+        end_time = time.time()
+        print("耗时：", (end_time - start_time)/60)
+        print("相似度计算次数：", number)
         if not level_label:
             results = "政策1是上级政策，政策2是下级政策，"
             relation1 = sorted(relation1_dic.items(), key=lambda x: x[1], reverse=True)
@@ -154,7 +166,7 @@ class Association():
         dic = {}
         index = 1
         for key in policy_lis:
-            dic[index] = [key[0], key[1]]
+            dic[index] = [key[0].replace(" ", ""), key[1]]
             index += 1
         return dic
 
@@ -261,11 +273,11 @@ class Association():
                 classify_label = self.bertClassify.predicts(sentences)
                 keyword_label = self.bertKeywordClassify.predicts(sentences)
                 for j in range(len(sentences)):
-                    policy_lis.append([sentences[j], classify_label[j], keyword_label[j]])
+                    policy_lis.append([" ".join(list(jieba.cut(sentences[j]))), classify_label[j], keyword_label[j]])
             else:
                 keyword_label = self.bertKeywordClassify.predict(sentences)
                 for j in range(len(sentences)):
-                    policy_lis.append([sentences[j], keyword_label[j]])
+                    policy_lis.append([" ".join(list(jieba.cut(sentences[j]))), keyword_label[j]])
         return policy_lis
 
     def getKeywordDict(self, policy_lis, use_classify=True):
@@ -332,7 +344,7 @@ class Association():
         #     for example2 in examples2:
         #         if example1["adj"] + example1["noun"] == example2["adj"] + example2["noun"]:
         #             return True
-        score =self.doc2vec.cal_similar(sentence1, sentence2)
+        score = self.doc2vec.cal_similar(sentence1, sentence2)
         if score >= 0.5:
             return True
         return False
