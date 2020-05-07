@@ -69,7 +69,7 @@ def extractPostTime(lines,file):
         text += line
         if("发布时间" in line):
             res = re.findall(post_time_pattern,line)
-            if(len(res > 0)):
+            if(len(res)> 0):
                 return res[0]
             res = re.findall(post_year_pattern,line)
             if(len(res) > 0):
