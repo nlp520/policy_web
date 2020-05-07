@@ -3,12 +3,14 @@ from classify.classify import BertClassify, CnnClassify
 from classify.keyword_classify import BertKeywordClassify, CnnKeywordClassify
 from parser.syntactic_parsing import HanlpParser
 from utils.utils import sentence_tokenize, convert_date
+from similar.Doc2vec import DocVec
 import time
 class Association():
     def __init__(self):
         self.bertClassify = CnnClassify()
         self.bertKeywordClassify = CnnKeywordClassify()
         self.hanlpParser = HanlpParser()
+        self.doc2vec = DocVec()
         self.batch_size = 30
 
     def analyzeAll(self, policy1, policy2):
@@ -65,6 +67,13 @@ class Association():
         }
 
     def analyze_realtion(self, policy1_lis, policy2_lis, level_label):
+        '''
+        两个政策文本的关联分析
+        :param policy1_lis:
+        :param policy2_lis:
+        :param level_label:
+        :return:
+        '''
         policy1_dic = {}
         policy2_dic = {}
         for lis in policy1_lis:
@@ -137,6 +146,11 @@ class Association():
         return results
 
     def get_relation(self, policy_lis):
+        '''
+        返回政策的句子属性
+        :param policy_lis:
+        :return:
+        '''
         dic = {}
         index = 1
         for key in policy_lis:
@@ -151,8 +165,18 @@ class Association():
         :param policy2_field:
         :return:
         '''
-        if policy1_field == policy2_field:
-            return True
+        if "#" in policy1_field:
+            policy1_field = policy1_field.split("#")
+        else:
+            policy1_field = [policy1_field]
+        if "#" in policy2_field:
+            policy2_field = policy2_field.split("#")
+        else:
+            policy2_field = [policy2_field]
+        for policy1 in policy1_field:
+            for policy2 in policy2_field:
+                if policy1 == policy2:
+                    return True
         else:
             return False
     def judge_time(self, first_time, second_time):
@@ -209,9 +233,14 @@ class Association():
                         return "无法比较"
 
     def clear_sentences(self, sentences):
+        '''
+        对句子集合中的句子进行清洗，去除前后空格
+        :param sentences:
+        :return:
+        '''
         new_sentences = []
         for sentence in sentences:
-            sentence = sentence.strip().replace("\u3000", "")
+            sentence = sentence.strip().replace("\u3000", "").replace(" ","")
             if not sentence:
                 continue
             new_sentences.append(sentence)
@@ -260,6 +289,14 @@ class Association():
 
     #分析单个句子
     def assoSingleAnalyze(self, policy1, policy2, sentence, id):
+        '''
+        判断单个句子的相关性
+        :param policy1:
+        :param policy2:
+        :param sentence:
+        :param id:
+        :return:
+        '''
         results = []
         if id == 1:
             context = policy2.get("context")
@@ -284,13 +321,18 @@ class Association():
         }
 
     def cal_similar(self, sentence1, sentence2):
-        import random
-        if random.random() > 0.7:
+        # import random
+        # if random.random() > 0.7:
+        #     return True
+        # else:
+        #     return False
+        # examples1 = self.hanlpParser.parser(sentence1)
+        # examples2 = self.hanlpParser.parser(sentence2)
+        # for example1 in examples1:
+        #     for example2 in examples2:
+        #         if example1["adj"] + example1["noun"] == example2["adj"] + example2["noun"]:
+        #             return True
+        score =self.doc2vec.cal_similar(sentence1, sentence2)
+        if score >= 0.5:
             return True
-        else:
-            return False
-
-
-
-
-
+        return False

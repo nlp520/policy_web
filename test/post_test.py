@@ -5,9 +5,9 @@ import requests
 #请求的URL
 import json
 
-url_ = "http://127.0.0.1:5005"
+url_ = "http://127.0.0.1:5000/"
 def test_dataProcess():
-    url = url_ + '/dataProcess'
+    url = url_ + 'dataProcess'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -99,7 +99,7 @@ def test_dataProcess():
 
 
 def test_keywords():
-    url = url_ + '/keywords'
+    url = url_ + 'keywords'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -125,7 +125,7 @@ def test_keywords():
 
 
 def test_dataAnalyze():
-    url = url_ + '/dataAnalyze'
+    url = url_ + 'dataAnalyze'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -218,7 +218,7 @@ def test_dataAnalyze():
 
 
 def test_conflictDetection():
-    url = url_ + '/conflictDetection'
+    url = url_ + 'conflictDetection'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     dic = {
@@ -526,7 +526,7 @@ def test_assoAnalyze():
 
 
 def test_assoSingleAnalyze():
-    url = url_ + '/assoSingleAnalyze'
+    url = url_ + 'assoSingleAnalyze'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
@@ -732,7 +732,7 @@ def test_assoSingleAnalyze():
 
 
 def test_policyFind():
-    url = url_ + '/policyFind'
+    url = url_ + 'policyFind'
     # 请求头
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     # 请求的参数
