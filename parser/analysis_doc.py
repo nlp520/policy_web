@@ -348,20 +348,27 @@ def basicInfoExtract(document):
     province = "",  # 发布省份  ok
     date = "",  # 发布时间
     context= document
-
-    prefaces = prefaces.strip()
-    name = infoextract.extract_name(prefaces)
-    # print(prefaces)
-    # print("name:", name)
-    if name:
-        province = infoextract.extract_province(name)
-        # print(province)
-        org = infoextract.extract_org(name, prefaces)
-        # print("org:", org)
-        date = infoextract.extract_date(prefaces, name)
-        # print("date:", date)
-        category = infoextract.extract_cate(name)
-        # print("category:", category)
+    try:
+        prefaces = prefaces.strip()
+        name = infoextract.extract_name(prefaces)
+        # print(prefaces)
+        # print("name:", name)
+        if name:
+            province = infoextract.extract_province(name)
+            # print(province)
+            org = infoextract.extract_org(name, prefaces)
+            # print("org:", org)
+            date = infoextract.extract_date(prefaces, name)
+            # print("date:", date)
+            category = infoextract.extract_cate(name)
+            # print("category:", category)
+    except:
+        name = "",  # 政策名 ok
+        org = "人民政府",  # 发布机构
+        category = "",  # 政策类别  ok
+        province = "",  # 发布省份  ok
+        date = "",  # 发布时间
+        context = document
     results = {
         "name": name,  # 政策名
         "org": org,  # 发布机构

@@ -33,8 +33,11 @@ def dataProcess():
             '''
             添加数据处理操作
             '''
-            results = basicInfoExtract(datax)
-            return jsonify({"error_code":0, "reason":"", "data":results})
+            try:
+                results = basicInfoExtract(datax)
+                return jsonify({"error_code":0, "reason":"", "data":results})
+            except:
+                return jsonify({"error_code":3, "reason":"输入数据错误，无法进行解析", "data":""})
         else:
             return jsonify({"error_code": 1, "reason": "没有输入政策数据", "data": ""})
     else:
@@ -78,8 +81,11 @@ def dataAnalyze():
             '''
             添加数据处理操作
             '''
-            results = parser_doc(datax)
-            return jsonify({"error_code":0, "reason":"", "data":results})
+            try:
+                results = parser_doc(datax)
+                return jsonify({"error_code":0, "reason":"", "data":results})
+            except:
+                return jsonify({"error_code": 3, "reason": "输入数据错误，无法进行解析", "data": ""})
         else:
             return jsonify({"error_code": 1, "reason": "没有输入政策数据", "data": ""})
     else:
@@ -100,13 +106,16 @@ def conflictDetection():
             '''
             添加数据处理操作
             '''
-            datax = json.loads(datax)
-            results = conflict.conflict(datax, target_sent=test_policy)
+            try:
+                datax = json.loads(datax)
+                results = conflict.conflict(datax, target_sent=test_policy)
             # results = {
             #     "result":"存在时间类型的冲突",
             #     "sentence":"到2020年，实现全面建设中国物联网体系平台。"
             # }
-            return jsonify({"error_code":0, "reason":"", "data":results})
+                return jsonify({"error_code":0, "reason":"", "data":results})
+            except:
+                return jsonify({"error_code": 3, "reason": "输入数据错误，无法进行解析", "data": ""})
         else:
             return jsonify({"error_code": 1, "reason": "没有输入政策数据或者是待检测文本", "data": ""})
     else:
@@ -126,9 +135,10 @@ def assoAnalyze():
             '''
             添加数据处理操作
             '''
-            policy1 = json.loads(policy1)
-            policy2 = json.loads(policy2)
-            results = asso.analyzeAll(policy1, policy2)
+            try:
+                policy1 = json.loads(policy1)
+                policy2 = json.loads(policy2)
+                results = asso.analyzeAll(policy1, policy2)
             # results = {
             #     "result":"对于政策A来说，政策B是起到理论指导作用",
             #     "policy1":{
@@ -141,7 +151,9 @@ def assoAnalyze():
             #         "2":["句子", "理论指导"],
             #      }#第二个政策每句话的分析
             # }
-            return jsonify({"error_code":0, "reason":"", "data": results})
+                return jsonify({"error_code":0, "reason":"", "data": results})
+            except:
+                return jsonify({"error_code": 3, "reason": "输入数据错误，无法进行解析", "data": ""})
         else:
             return jsonify({"error_code": 1, "reason": "没有输入政策数据", "data": ""})
     else:
@@ -160,20 +172,23 @@ def assoSingleAnalyze():
         sentence = request.form.get('sentence', "")
         id = request.form.get('id', None)
         if policy1 and policy2 and sentence and id is not None:
-            id = int(id)
-            '''
-            添加数据处理操作
-            '''
-            policy1 = json.loads(policy1)
-            policy2 = json.loads(policy2)
-            results = asso.assoSingleAnalyze(policy1, policy2, sentence, id)
-            # results = {
-            #     "policy":{
-            #         "1":["句子", "相似"],
-            #         "2":["句子", "不相似"],
-            #     }
-            # }
-            return jsonify({"error_code":0, "reason":"", "data":results})
+            try:
+                id = int(id)
+                '''
+                添加数据处理操作
+                '''
+                policy1 = json.loads(policy1)
+                policy2 = json.loads(policy2)
+                results = asso.assoSingleAnalyze(policy1, policy2, sentence, id)
+                # results = {
+                #     "policy":{
+                #         "1":["句子", "相似"],
+                #         "2":["句子", "不相似"],
+                #     }
+                # }
+                return jsonify({"error_code":0, "reason":"", "data":results})
+            except:
+                return jsonify({"error_code": 3, "reason": "输入数据错误，无法进行解析", "data": ""})
         else:
             return jsonify({"error_code": 1, "reason": "没有输入政策数据或者输入信息不完整", "data": ""})
     else:
@@ -196,15 +211,18 @@ def policyFind():
             '''
             添加数据处理操作
             '''
-            print(policy_lis)
-            if not isinstance(policy_lis, list):
-                policy_lis = policy_lis.split("#")
-            res = find_policy(policy1, policy_lis, int(number))
-            print(res)
-            results = {
-                "result":"#".join(res)#"大数据#互联网#人工智能#物联网"
-            }
-            return jsonify({"error_code":0, "reason":"", "data":results})
+            try:
+                print(policy_lis)
+                if not isinstance(policy_lis, list):
+                    policy_lis = policy_lis.split("#")
+                res = find_policy(policy1, policy_lis, int(number))
+                print(res)
+                results = {
+                    "result":"#".join(res)#"大数据#互联网#人工智能#物联网"
+                }
+                return jsonify({"error_code":0, "reason":"", "data":results})
+            except:
+                return jsonify({"error_code": 3, "reason": "输入数据错误，无法进行解析", "data": ""})
         else:
             return jsonify({"error_code": 1, "reason": "没有输入政策数据或者输入信息不完整", "data": ""})
     else:
