@@ -29,12 +29,13 @@ def dataProcess():
     '''
     if request.method == 'POST':
         datax = request.form.get('text',"")
+        name = request.form.get("name", "")
         if datax:
             '''
             添加数据处理操作
             '''
             try:
-                results = basicInfoExtract(datax)
+                results = basicInfoExtract(datax, source_name=name)
                 return jsonify({"error_code":0, "reason":"", "data":results})
             except:
                 return jsonify({"error_code":3, "reason":"输入数据错误，无法进行解析", "data":""})

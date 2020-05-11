@@ -251,6 +251,16 @@ def generate_title(lis, title_dic):
         dic.update({title: dic_})
     return dic
 
+def get_documents(document):
+    sentences = re.split("\s", document)
+    documents = []
+    for s in sentences:
+        if s:
+            documents.append(s)
+    return documents
+
+
+
 def parser_doc(document):
     '''
     存储：
@@ -270,7 +280,7 @@ def parser_doc(document):
     title_dic = {}
     hanlp = HanlpParser(os.path.join(current_path, "dictionary.txt"))
     logger.info("开始解析")
-    documents = document.split("\n")
+    documents = get_documents(document)
     new_title = ""
 
     for para in documents:
@@ -312,7 +322,7 @@ def parser_doc(document):
     result_dic = generate_title(data_lis, title_dic)
     return result_dic
 
-def basicInfoExtract(document):
+def basicInfoExtract(document, source_name=""):
     '''
     基本信息提取
     :return:
@@ -324,7 +334,7 @@ def basicInfoExtract(document):
     stop_preface_flag = False
 
     logger.info("开始解析")
-    documents = document.split("\n")
+    documents = get_documents(document)
 
     for para in documents:
         if para:
@@ -342,7 +352,10 @@ def basicInfoExtract(document):
                 prefaces_lis.append(para.strip())
 
     #对文本进行提取基本信息
-    name = "",  # 政策名 ok
+    if source_name:
+        name = source_name,  # 政策名 ok
+    else:
+        name = ""
     org ="人民政府",  # 发布机构
     category = "",  # 政策类别  ok
     province = "",  # 发布省份  ok
@@ -350,7 +363,10 @@ def basicInfoExtract(document):
     context= document
     try:
         prefaces = prefaces.strip()
-        name = infoextract.extract_name(prefaces)
+        if source_name:
+            name = source_name
+        else:
+            name = infoextract.extract_name(prefaces)
         # print(prefaces)
         # print("name:", name)
         if name:
@@ -363,12 +379,15 @@ def basicInfoExtract(document):
             category = infoextract.extract_cate(name)
             # print("category:", category)
     except:
-        name = "",  # 政策名 ok
         org = "人民政府",  # 发布机构
         category = "",  # 政策类别  ok
         province = "",  # 发布省份  ok
         date = "",  # 发布时间
         context = document
+    #后处理
+    if len(org) > 15:
+        org = "人民政府"
+
     results = {
         "name": name,  # 政策名
         "org": org,  # 发布机构
