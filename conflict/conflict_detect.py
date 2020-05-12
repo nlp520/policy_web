@@ -192,22 +192,21 @@ class Conflict():
         if similar_sentence and similar_paragraph:
             #如果sentence后面有（）,那么继续增加
             print("similar_sentence:", similar_sentence)
+            print("similar_paragraph:", similar_paragraph)
             start_index = similar_paragraph.index(similar_sentence)
-            print("start_index:", start_index)
             end_index = start_index + len(similar_sentence)
-            word = similar_paragraph[end_index]
-            word_dic = {
-                "(":")",
-                "（":"）",
-                "[":"]",
-                "【":"】",
-                "{":"}",
-            }
-            if word in word_dic.keys():
-                end_index = similar_paragraph.index(word_dic[word], end_index+1) + 1
-            similar_sentence = similar_paragraph[start_index:end_index]
-            print("similar_sentence:",similar_sentence)
-            print("similar_paragraph:",similar_paragraph)
+            if end_index < len(similar_paragraph):
+                word = similar_paragraph[end_index]
+                word_dic = {
+                    "(":")",
+                    "（":"）",
+                    "[":"]",
+                    "【":"】",
+                    "{":"}",
+                }
+                if word in word_dic.keys():
+                    end_index = similar_paragraph.index(word_dic[word], end_index+1) + 1
+                similar_sentence = similar_paragraph[start_index:end_index]
             return similar_sentence, similar_paragraph
         else:
             return "", ""
