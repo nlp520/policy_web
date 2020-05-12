@@ -109,6 +109,7 @@ def conflictDetection():
             '''
             try:
                 datax = json.loads(datax)
+                print("conflict input: %s"%(datax))
                 results = conflict.conflict(datax, target_sent=test_policy)
             # results = {
             #     "result":"存在时间类型的冲突",
