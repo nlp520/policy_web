@@ -129,7 +129,17 @@ class Conflict():
         '''
         document = datax.get("context")
         similar_sentence, similar_paragraph = self.find_paragraph(document, target_sent)
+        if similar_sentence == "不是政策文本格式，不能解析":
+            return {
+                "result": "不是政策文本格式，不能解析",
+                "sentence": ""
+            }
         print("similar_sentence:",similar_sentence)
+        if not similar_sentence:
+            return {
+            "result": "不存在冲突，没有相似的句子",
+            "sentence": ""
+        }
         results = self.judge_conflict(target_sentence=target_sent, similar_sentence=similar_sentence, similar_paragraph=similar_paragraph)
 
         time_result, number_result, noun_result, duty_result, semantic_result = results
@@ -164,7 +174,8 @@ class Conflict():
         high_score = 0
         similar_sentence = ""
         similar_paragraph = ""
-
+        if not content_lis:
+            return "不是政策文本格式，不能解析", ""
         for i in range(len(content_lis)):
             paragraph = content_lis[i]
             if paragraph:
@@ -178,26 +189,28 @@ class Conflict():
                             similar_sentence = sentence
                             similar_paragraph = paragraph
                             high_score = score
-
-        #如果sentence后面有（）,那么继续增加
-        print("similar_sentence:", similar_sentence)
-        start_index = similar_paragraph.index(similar_sentence)
-        print("start_index:", start_index)
-        end_index = start_index + len(similar_sentence)
-        word = similar_paragraph[end_index]
-        word_dic = {
-            "(":")",
-            "（":"）",
-            "[":"]",
-            "【":"】",
-            "{":"}",
-        }
-        if word in word_dic.keys():
-            end_index = similar_paragraph.index(word_dic[word], end_index+1) + 1
-        similar_sentence = similar_paragraph[start_index:end_index]
-        # print("similar_sentence:",similar_sentence)
-        # print("similar_paragraph:",similar_paragraph)
-        return similar_sentence, similar_paragraph
+        if similar_sentence and similar_paragraph:
+            #如果sentence后面有（）,那么继续增加
+            print("similar_sentence:", similar_sentence)
+            start_index = similar_paragraph.index(similar_sentence)
+            print("start_index:", start_index)
+            end_index = start_index + len(similar_sentence)
+            word = similar_paragraph[end_index]
+            word_dic = {
+                "(":")",
+                "（":"）",
+                "[":"]",
+                "【":"】",
+                "{":"}",
+            }
+            if word in word_dic.keys():
+                end_index = similar_paragraph.index(word_dic[word], end_index+1) + 1
+            similar_sentence = similar_paragraph[start_index:end_index]
+            print("similar_sentence:",similar_sentence)
+            print("similar_paragraph:",similar_paragraph)
+            return similar_sentence, similar_paragraph
+        else:
+            return "", ""
 
     def judge_conflict(self, target_sentence, similar_sentence=None, similar_paragraph=None, source_att = None, target_att = None):
         '''

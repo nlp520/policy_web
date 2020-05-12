@@ -333,18 +333,18 @@ class Association():
         }
 
     def cal_similar(self, sentence1, sentence2):
-        # import random
-        # if random.random() > 0.7:
-        #     return True
-        # else:
-        #     return False
+        import random
+        if random.random() > 0.7:
+            return True
+        else:
+            return False
         # examples1 = self.hanlpParser.parser(sentence1)
         # examples2 = self.hanlpParser.parser(sentence2)
         # for example1 in examples1:
         #     for example2 in examples2:
         #         if example1["adj"] + example1["noun"] == example2["adj"] + example2["noun"]:
         #             return True
-        score = self.doc2vec.cal_similar(sentence1, sentence2)
-        if score >= 0.5:
-            return True
-        return False
+        # score = self.doc2vec.cal_similar(sentence1, sentence2)
+        # if score >= 0.5:
+        #     return True
+        # return False
