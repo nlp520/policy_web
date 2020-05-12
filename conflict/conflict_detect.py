@@ -128,6 +128,7 @@ class Conflict():
         :return:
         '''
         document = datax.get("context")
+        print("input context:%s"%(document))
         similar_sentence, similar_paragraph = self.find_paragraph(document, target_sent)
         if similar_sentence == "不是政策文本格式，不能解析":
             return {
