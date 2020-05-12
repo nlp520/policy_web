@@ -228,17 +228,21 @@ class Conflict():
         # 时间冲突
         results = re.findall("\d+[年月日\.\-]+", target_sent_copy)
         if results:
-            # print("time:", results)
-            time_result = self.time_conflict(target_sentence, similar_sentence, similar_paragraph, source_att, target_att)
-            print("time:", time_result)
-            for r in results:
-                target_sent_copy = target_sent_copy.replace(r, "")
+            results_ = re.findall("\d+[年月日\.\-]+", similar_sentence)
+            if results_:
+                # print("time:", results)
+                time_result = self.time_conflict(target_sentence, similar_sentence, similar_paragraph, source_att, target_att)
+                print("time:", time_result)
+                for r in results:
+                    target_sent_copy = target_sent_copy.replace(r, "")
         #数值类型冲突
         results = re.findall("\d+|一二三四五六七八九十", target_sent_copy)
         if results:
-            print(results)
-            number_result = self.number_conflict(target_sentence, similar_sentence, similar_paragraph, source_att, target_att)
-            print("number:",number_result)
+            results_ = re.findall("\d+|一二三四五六七八九十", similar_sentence)
+            if results_:
+                print(results)
+                number_result = self.number_conflict(target_sentence, similar_sentence, similar_paragraph, source_att, target_att)
+                print("number:",number_result)
 
         #专有名词：
         for noun in self.noun_lis:
@@ -254,8 +258,12 @@ class Conflict():
                 break
 
         #语义冲突
-        semantic_result = self.semantic_conflict(target_sentence, similar_sentence, similar_paragraph, source_att, target_att)
-        print("semantic:", semantic_result)
+        try:
+            semantic_result = self.semantic_conflict(target_sentence, similar_sentence, similar_paragraph, source_att, target_att)
+            print("semantic:", semantic_result)
+        except:
+            print("存在semantic_result 解析错误")
+            pass
 
         return (time_result, number_result, noun_result, duty_result, semantic_result)
 
