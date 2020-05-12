@@ -107,8 +107,7 @@ def conflictDetection():
             '''
             添加数据处理操作
             '''
-            # try:
-            if 1:
+            try:
                 datax = json.loads(datax)
                 print("conflict input: %s"%(datax))
                 results = conflict.conflict(datax, target_sent=test_policy)
@@ -117,8 +116,8 @@ def conflictDetection():
             #     "sentence":"到2020年，实现全面建设中国物联网体系平台。"
             # }
                 return jsonify({"error_code":0, "reason":"", "data":results})
-            # except:
-            return jsonify({"error_code": 3, "reason": "输入数据错误，无法进行解析", "data": ""})
+            except:
+                return jsonify({"error_code": 3, "reason": "输入数据错误，无法进行解析", "data": ""})
         else:
             return jsonify({"error_code": 1, "reason": "没有输入政策数据或者是待检测文本", "data": ""})
     else:
