@@ -57,7 +57,7 @@ def parser_doc_clear(content:str, mode=1):
     :return:
     '''
     content_lis = []
-    documents = [para.strip() for para in content.split("\n") if para.strip()]
+    documents = get_documents(content)
     prefaces = ""
     prefaces_lis = []
     stop_preface_flag = False
