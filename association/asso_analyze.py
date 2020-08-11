@@ -219,12 +219,13 @@ class Association():
 
         province1 = policy1.get("province")
         province2 = policy2.get("province")
-
-        if org1 == "国务院" and org2 == "国务院":
+        print("org1:", org1)
+        print("org2:", org2)
+        if org1 in ['国务院', '中央', '财政部'] and org2 in ['国务院', '中央', '财政部']:
             return self.judge_time(date1, date2)
-        elif org1 == "国务院" and org2 != "国务院":
+        elif org1 in ['国务院', '中央', '财政部'] and org2 not in ['国务院', '中央', '财政部']:
             return False
-        elif org1 != "国务院" and org2 == "国务院":
+        elif org1 not in ['国务院', '中央', '财政部'] and org2 in ['国务院', '中央', '财政部']:
             return True
         else:
             #相同机构，时间发布早的优先级高

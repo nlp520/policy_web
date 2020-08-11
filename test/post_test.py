@@ -5,7 +5,7 @@ import requests
 #请求的URL
 import json
 
-url_ = "http://127.0.0.1:5000/"
+url_ = "http://127.0.0.1:5005/"
 def test_dataProcess():
     url = url_ + 'dataProcess'
     # 请求头

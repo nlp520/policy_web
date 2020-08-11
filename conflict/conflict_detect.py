@@ -158,7 +158,7 @@ class Conflict():
             res_txt += "语义类型冲突 "
         if res_txt == "存在":
             res_txt = "不存在冲突"
-            sentence = ""
+            # sentence = ""
         return {
             "result": res_txt,
             "sentence": sentence
