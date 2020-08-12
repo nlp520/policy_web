@@ -11,6 +11,7 @@ import numpy as np
 from gensim import utils, matutils
 from gensim.models.doc2vec import Doc2Vec, LabeledSentence
 import jieba
+import time
 TaggededDocument = gensim.models.doc2vec.TaggedDocument
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -55,9 +56,15 @@ class DocVec():
         else:
             s1_tokens = s1.split(" ")
             s2_tokens = s2.split(" ")
+        t1 = time.time()
         inferred_s1 = self.model_dm.infer_vector(s1_tokens)
         inferred_s2 = self.model_dm.infer_vector(s2_tokens)
+        print("inferred_s1:", inferred_s1.shape)
+        t2 = time.time()
+        print("time1:", t2 - t1)
         sims = dot(matutils.unitvec(inferred_s1), matutils.unitvec(inferred_s2))
+        t3 = time.time()
+        print("time2:", t3 - t2)
         return sims
 
     def cal_similar_batch(self, sent1_lis, sent2_lis):
@@ -72,9 +79,18 @@ class DocVec():
 if __name__ == '__main__':
     # x_train = get_datasest('./dataset/corpus.txt')
     # model_dm = train(x_train)
-
+    start_time = time.time()
     docvec = DocVec()
-    s1 = ["推动大数据基础平台建设".replace(" ", ""), "推动大数据基础平台建设".replace(" ", "")]
-    s2 = ["发展大数据人工智能".replace(" ", ""), "发展大数据人工智能".replace(" ", "")]
-    score = docvec.cal_similar_batch(s1, s2)
-    print(score)
+    # s1 = ["推动大数据基础平台建设".replace(" ", ""), "推动大数据基础平台建设".replace(" ", "")]
+    # s2 = ["发展大数据人工智能".replace(" ", ""), "发展大数据人工智能".replace(" ", "")]
+    # score = docvec.cal_similar_batch(s1, s2)
+    # print(score)
+
+    for i in range(10000):
+        s1 = "推动大数据基础平台建设"
+        s2 = "发展大数据人工智能"
+        score = docvec.cal_similar(s1, s2, use_jieba=True)
+        # print("score:", score)
+
+    end_time = time.time()
+    print("time:", (end_time - start_time))

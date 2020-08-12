@@ -1,4 +1,5 @@
 #encoding:utf-8
+from BLEU.bleu import Bleu
 from classify.classify import BertClassify, CnnClassify
 from classify.keyword_classify import BertKeywordClassify, CnnKeywordClassify
 from parser.syntactic_parsing import HanlpParser
@@ -13,6 +14,7 @@ class Association():
         self.hanlpParser = HanlpParser()
         self.doc2vec = DocVec()
         self.batch_size = 30
+        self.bleu = Bleu(1)
 
     def analyzeAll(self, policy1, policy2):
         '''
@@ -59,12 +61,14 @@ class Association():
         dic_policy1 = self.get_relation(policy1_lis)
         dic_policy2 = self.get_relation(policy2_lis)
 
-        results = self.analyze_realtion(policy1_lis, policy2_lis, level_label)
+        results, policy1_similar_dic, policy2_similar_dic = self.analyze_realtion(policy1_lis, policy2_lis, level_label)
 
         return {
-            "results": results,
+            "result": results,
             "policy1": dic_policy1,
-            "policy2": dic_policy2
+            "policy2": dic_policy2,
+            'policy1_similar_dic': policy1_similar_dic,
+            'policy2_similar_dic': policy2_similar_dic
         }
 
     def analyze_realtion(self, policy1_lis, policy2_lis, level_label):
@@ -77,17 +81,20 @@ class Association():
         '''
         policy1_dic = {}
         policy2_dic = {}
+        index = 1
         for lis in policy1_lis:
             if lis[2] not in policy1_dic:
-                policy1_dic[lis[2]] = [[lis[0], lis[1]]]
+                policy1_dic[lis[2]] = [[lis[0], lis[1], index]]
             else:
-                policy1_dic[lis[2]].append([lis[0], lis[1]])
+                policy1_dic[lis[2]].append([lis[0], lis[1], index])
+            index += 1
+        index = 1
         for lis in policy2_lis:
             if lis[2] not in policy2_dic:
-                policy2_dic[lis[2]] = [[lis[0], lis[1]]]
+                policy2_dic[lis[2]] = [[lis[0], lis[1], index]]
             else:
-                policy2_dic[lis[2]].append([lis[0], lis[1]])
-
+                policy2_dic[lis[2]].append([lis[0], lis[1], index])
+            index += 1
         print(policy2_dic.keys())
         #计算相同关键词的句子的相似度
         relation1_dic = {}
@@ -99,6 +106,9 @@ class Association():
             if key != "[UNK]" and key in policy2_dic:
                 print(len(value) * len(policy2_dic[key]))
 
+        # 统计相似的句子
+        policy1_similar_dic = {}
+        policy2_similar_dic = {}
 
         for key, value1_lis in policy1_dic.items():
             if key != "[UNK]" and key in policy2_dic:
@@ -116,6 +126,17 @@ class Association():
                                 relation2_dic[sent2_lis[1]] = 1
                             else:
                                 relation2_dic[sent2_lis[1]] += 1
+
+                            if sent1_lis[2] not in policy1_similar_dic:
+                                policy1_similar_dic[sent1_lis[2]] = [sent2_lis[2]]
+                            else:
+                                policy1_similar_dic[sent1_lis[2]].append(sent2_lis[2])
+
+                            if sent2_lis[2] not in policy2_similar_dic:
+                                policy2_similar_dic[sent2_lis[2]] = [sent1_lis[2]]
+                            else:
+                                policy2_similar_dic[sent2_lis[2]].append(sent1_lis[2])
+
         end_time = time.time()
         print("耗时：", (end_time - start_time)/60)
         print("相似度计算次数：", number)
@@ -155,7 +176,7 @@ class Association():
                 result_relation2 = relation[0]
                 break
             results = results + "从整体上看，政策1对政策2起到" + result_relation1 + "的作用，政策2对政策1起到" + result_relation2 + "的作用。"
-        return results
+        return results, policy1_similar_dic, policy2_similar_dic
 
     def get_relation(self, policy_lis):
         '''
@@ -166,7 +187,7 @@ class Association():
         dic = {}
         index = 1
         for key in policy_lis:
-            dic[index] = [key[0].replace(" ", ""), key[1]]
+            dic[index] = [key[0].replace(" ", ""), key[1], key[2]]
             index += 1
         return dic
 
@@ -191,6 +212,7 @@ class Association():
                     return True
         else:
             return False
+
     def judge_time(self, first_time, second_time):
         '''
         判断哪个时间在前，返回False， 第二个时间要近，返回True,第一个时间近
@@ -201,7 +223,6 @@ class Association():
         first_time = convert_date(first_time)
         second_time = convert_date(second_time)
         return first_time > second_time
-
 
     def judge_level(self, policy1, policy2):
         '''
@@ -219,8 +240,11 @@ class Association():
 
         province1 = policy1.get("province")
         province2 = policy2.get("province")
-        print("org1:", org1)
-        print("org2:", org2)
+        if province1 == '中央' and province2 != '中央':
+            return False
+        elif province1 != '中央' and province2 == '中央':
+            return True
+
         if org1 in ['国务院', '中央', '财政部'] and org2 in ['国务院', '中央', '财政部']:
             return self.judge_time(date1, date2)
         elif org1 in ['国务院', '中央', '财政部'] and org2 not in ['国务院', '中央', '财政部']:
@@ -253,7 +277,7 @@ class Association():
         '''
         new_sentences = []
         for sentence in sentences:
-            sentence = sentence.strip().replace("\u3000", "").replace(" ","")
+            sentence = sentence.strip().replace("\u3000", "").replace(" ","").replace("&nbsp;","").strip()
             if not sentence:
                 continue
             new_sentences.append(sentence)
@@ -334,11 +358,11 @@ class Association():
         }
 
     def cal_similar(self, sentence1, sentence2):
-        import random
-        if random.random() > 0.7:
-            return True
-        else:
-            return False
+        # import random
+        # if random.random() > 0.7:
+        #     return True
+        # else:
+        #     return False
         # examples1 = self.hanlpParser.parser(sentence1)
         # examples2 = self.hanlpParser.parser(sentence2)
         # for example1 in examples1:
@@ -349,3 +373,9 @@ class Association():
         # if score >= 0.5:
         #     return True
         # return False
+        self.bleu.add_inst(sentence1, sentence2)
+        score = self.bleu.get_score()
+        if score > 0.1:
+            return True
+        else:
+            return False

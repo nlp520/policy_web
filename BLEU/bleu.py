@@ -77,9 +77,9 @@ class Bleu(object):
         return bleu_score
 
 if __name__ == '__main__':
-    cand = "中国人"
-    ref = "中国"
-    bleu = Bleu(1)
+    cand = "推动大数据基础平台建设"
+    ref = "推动大数据基础平台建设"
+    bleu = Bleu(3)
     bleu.add_inst(cand, ref)
     s = bleu.get_score()
     print(s)

@@ -1,4 +1,6 @@
-#encoding:utf-8
+#coding:utf-8
+import sys
+sys.path.insert(0, "./")
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 from flask import Flask
