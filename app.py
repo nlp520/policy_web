@@ -60,7 +60,7 @@ def keywords():
             '''
             添加数据处理操作
             '''
-            keyword = getKeywords(datax, num= number)
+            keyword = getKeywords(datax, num= number, use_value=False)
             results = {
                 "keywords":keyword,#关键词
             }

@@ -3,6 +3,7 @@ from pyhanlp import *
 import re
 import json
 import logging
+import os
 from .syntactic_parsing import HanlpParser
 from .provinces import province_dic
 from .CategoryClassify import classifyCategoriesByName
@@ -246,7 +247,7 @@ def generate_title(lis, title_dic):
             old_id = i + 1
     if level == lis[i][0]:
         dic.update({title: title_dic.get(title, [])})
-    if i != number-1:
+    if old_id < number-1:
         dic_ = generate_title(lis[old_id: number], title_dic)
         dic.update({title: dic_})
     return dic

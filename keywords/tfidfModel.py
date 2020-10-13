@@ -44,7 +44,7 @@ class TfIdf(object):
         return tf_dic
 
     # 按公式计算tf-idf
-    def get_tfidf(self):
+    def get_tfidf(self, use_value=False):
         tfidf_dic = {}
         for word in self.word_list:
             idf = self.idf_dic.get(word, self.default_idf)
@@ -58,6 +58,10 @@ class TfIdf(object):
         # 根据tf-idf排序，去排名前keyword_num的词作为关键词
         res = []
         for k, v in sorted(tfidf_dic.items(), key=functools.cmp_to_key(cmp), reverse=True)[:self.keyword_num]:
-            res.append(k)
+            if use_value:
+                string = str(k) + '\t' +str(v)
+                res.append(string)
+            else:
+                res.append(k)
         return "#".join(res)
 

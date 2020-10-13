@@ -60,7 +60,7 @@ def load_data(pos=False, corpus_path=os.path.join(root_path, "dataset", "corpus.
 
     return doc_list
 
-def tfidf_extract(word_list, pos=False, keyword_num=10, idf = True):
+def tfidf_extract(word_list, pos=False, keyword_num=10, idf = True, use_value=False):
     if not idf:
         doc_list = load_data(pos)
         idf_dic, default_idf = train_idf(doc_list)
@@ -68,9 +68,9 @@ def tfidf_extract(word_list, pos=False, keyword_num=10, idf = True):
         idf_dic = pickle.load(open(os.path.join(root_path, "dataset", "idf_dic.pkl"), "rb"))
         default_idf = idf_dic["default"]
     tfidf_model = TfIdf(idf_dic, default_idf, word_list, keyword_num)
-    return tfidf_model.get_tfidf()
+    return tfidf_model.get_tfidf(use_value)
 
-def getKeywords(sent, pos=True ,num=10):
+def getKeywords(sent, pos=True ,num=10, use_value=False):
     '''
     获取关键词
     :param sent:
@@ -81,7 +81,7 @@ def getKeywords(sent, pos=True ,num=10):
     sent = sent.strip()
     seg_list = seg_to_list(sent, pos)
     filter_list = word_filter(seg_list, pos)
-    results = tfidf_extract(filter_list, pos, keyword_num=num)
+    results = tfidf_extract(filter_list, pos, keyword_num=num, use_value=use_value)
     return results
 
 

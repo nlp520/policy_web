@@ -21,10 +21,10 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 class Conflict():
     def __init__(self):
 
-        self.duty_lis = ['负责']#职责名词
+        self.duty_lis = ['负责', "职责单位"]#职责名词
         self.noun_lis = ["是指", "定义为"]#专有名词
-        self.pos_words = ["增加", "达到", "培育", "建设"]
-        self.neg_words = ["减少", "缩减"]
+        self.pos_words = ["增加", "达到", "培育", "建设", "超过", "打造", "建成"]
+        self.neg_words = ["减少", "缩减", '抑制', '减弱', "弱化"]
         pass
 
     def clear_punctuation(self, text):
@@ -299,9 +299,12 @@ class Conflict():
             same_flag = True
         #增加句子语义匹配
         if not same_flag:
-            score = self.bleu_cal(target_sentence, similar_sentence)
-            if score > 0.9:
-                same_flag = True
+            similar_sentences = similar_sentence.split("，")
+            for sentence in similar_sentences:
+                score = self.bleu_cal(target_sentence, sentence)
+                if score > 0.5:
+                    same_flag = True
+                    break
 
         #判断时间是否是一致的
         time_flag = False
